@@ -11,6 +11,7 @@
     <string name="section_gamepad">GAMEPAD</string>
     <string name="section_library">NATIVE LIBRARY</string>
     <string name="section_target">TARGET</string>
+    <string name="section_import">IMPORT · FILE GAME (lokal saja)</string>
 
     <!-- Status values -->
     <string name="gamepad_empty">Belum ada gamepad. Hubungkan via Bluetooth/OTG.</string>
@@ -33,4 +34,9 @@
     <!-- Controller hints -->
     <string name="hint_play">X Play</string>
     <string name="hint_back">O Back</string>
+
+    <!-- Import -->
+    <string name="import_pending">Membaca file…</string>
+    <string name="import_error">Gagal membaca file.</string>
+    <string name="import_legal">Gunakan hanya salinan game yang sah. File tidak disimpan/diupload.</string>
 </resources>

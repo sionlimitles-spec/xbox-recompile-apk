@@ -33,6 +33,19 @@ Konsep UI mengikuti referensi **PS5 / Console Launcher**: layar penuh lanskap, h
 | `IMPORT` | ada | apa saja | `Status: IMPORT — pilih file game.` |
 | `SIAP` | ada | termuat | `Status: SIAP — gamepad dan library tersedia.` |
 
+## Import Game (lokal saja)
+
+Tombol **Import Game** membuka file picker sistem (`ACTION_OPEN_DOCUMENT`). File hanya **dibaca di perangkat** untuk metadata:
+
+- nama file
+- ukuran (byte)
+- SHA-256
+- 16 byte pertama (hex)
+
+Hasil tampil di kartu **IMPORT · FILE GAME** (muncul setelah pilih). **Tidak ada upload, tidak ada penyimpanan ke repo.** Pengingat hukum selalu ditampilkan.
+
+Implementasi: `MainActivity.inspectUri()` — baca via `ContentResolver`, hash via `MessageDigest`.
+
 ## Animasi
 - **Fade-in/out** saat ganti state (`res/animator/fade_in.xml`, `res/animator/fade_out.xml`).
 - **Scale kartu** saat pilih ikon (`res/animator/scale_card.xml`).

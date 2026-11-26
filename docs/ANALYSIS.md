@@ -17,11 +17,17 @@ Skrip `scripts/analyze_local.py` hanya membuat **inventarisasi lokal** dari file
 
 ## Pakai
 
+### Di PC (skrip Python)
+
 ```sh
 python3 scripts/analyze_local.py --file /path/di/luar/repo/game.xex --label braid
 ```
 
 Hasil: `analysis/braid.json` (folder `analysis/` sudah di-ignore git).
+
+### Di HP (tombol Import di launcher)
+
+Launcher punya tombol **Import Game** yang membaca metadata file langsung di perangkat (nama, ukuran, SHA-256, 16 byte pertama). File **tidak disimpan dan tidak diupload** — hanya dibaca sekali lalu hasilnya ditampilkan. Lihat [UI.md](UI.md).
 
 Laporan ini berguna untuk:
 - memverifikasi identitas salinan Anda,

@@ -208,6 +208,36 @@
 
         </LinearLayout>
 
+        <!-- Kartu hasil import (muncul setelah pilih file) -->
+        <LinearLayout
+            android:id="@+id/import_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/card_bg"
+            android:orientation="vertical"
+            android:padding="14dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/section_import"
+                android:textColor="#0078D7"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/import_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontFamily="monospace"
+                android:textColor="#E6EDF7"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <!-- Layer 4: Controller Hints (pojok kanan bawah) -->
