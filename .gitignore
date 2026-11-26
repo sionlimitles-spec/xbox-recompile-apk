@@ -8,6 +8,9 @@ game_data/
 games/
 configs/*.local.toml
 
+# Hasil analisa lokal (jangan di-commit)
+analysis/
+
 # Hasil build
 *.apk
 *.aab
