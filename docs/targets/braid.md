@@ -51,6 +51,8 @@ Titik integrasi di repo ini: `launcher/app/src/main/jniLibs/arm64-v8a/` (di-igno
 
 Checklist area impor XDK yang perlu di-HLE: [braid-xdk-checklist.md](braid-xdk-checklist.md).
 
+Titik sambung ke launcher Android: [INTEGRATION.md](../INTEGRATION.md).
+
 ## Milestone yang disarankan
 
 1. Analisa impor/XDK dan daftar fungsi yang perlu HLE.

@@ -12,6 +12,10 @@ import java.util.Locale;
 public class MainActivity extends Activity {
 
     private TextView statusView;
+    private boolean nativeLibraryLoaded = false;
+
+    // Kontrak JNI minimal; diimplementasikan oleh libbraid.so hasil recompile.
+    private static native int nativeStart();
 
     private final InputManager.InputDeviceListener deviceListener =
             new InputManager.InputDeviceListener() {
@@ -36,7 +40,17 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         statusView = findViewById(R.id.status);
+        loadNativeLibrary();
         refresh();
+    }
+
+    private void loadNativeLibrary() {
+        try {
+            System.loadLibrary("braid");
+            nativeLibraryLoaded = true;
+        } catch (UnsatisfiedLinkError error) {
+            nativeLibraryLoaded = false;
+        }
     }
 
     @Override
@@ -80,8 +94,11 @@ public class MainActivity extends Activity {
             text.append("- Belum ada. Hubungkan gamepad Xbox via Bluetooth/OTG.\n");
         }
 
-        text.append("\nStatus: stub launcher. Tambahkan native library hasil recompile "
-                + "di jniLibs/arm64-v8a/ untuk menjalankan game.");
+        text.append("\nNative library: ");
+        text.append(nativeLibraryLoaded
+                ? "libbraid.so termuat."
+                : "belum ada (letakkan di jniLibs/arm64-v8a/).");
+        text.append("\nStatus: stub launcher. Lihat docs/INTEGRATION.md untuk menyambungkan entry point game.");
         statusView.setText(text.toString());
     }
 }
