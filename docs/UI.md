@@ -65,6 +65,18 @@ Picker sistem (`ACTION_OPEN_DOCUMENT`, fallback `ACTION_GET_CONTENT`). File hany
 
 Lihat [INTEGRATION.md](INTEGRATION.md) untuk kontrak native dan [BRAID-REQUIREMENTS.md](BRAID-REQUIREMENTS.md) untuk analisa target.
 
+## Layar game (`GameActivity`)
+
+Bila `libbraid.so` nyata terpasang, tombol **Play** membuka layar game:
+
+- `SurfaceView` penuh layar sebagai target render native (`ANativeWindow`).
+- Loop frame 60 fps yang memanggil `nativeFrame(nowMs)`.
+- Input: `A/B/X/Y/LB/RB/DPAD/START` dari gamepad, sentuh layar → axis X/Y + tombol `TOUCH`.
+- Audio native di-init saat resume dan dimatikan saat pause.
+- `Back` untuk keluar; petunjuk ditampilkan 3 detik pertama.
+
+Saat library masih stub, layar ini **tidak dibuka** — launcher memberi dialog penjelasan. Kontrak lengkap: [INTEGRATION.md](INTEGRATION.md).
+
 ## Kenapa belum bisa langsung main?
 
-Karena belum ada hasil recompile, HLE, renderer, dan audio. Launcher ini **diagnostik + titik integrasi**, bukan APK game.
+Karena belum ada hasil recompile, HLE, renderer, dan audio. Sisi Java sudah siap sebagai titik integrasi; yang kosong ada di sisi native.

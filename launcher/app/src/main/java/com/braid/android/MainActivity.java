@@ -256,14 +256,10 @@ public class MainActivity extends Activity {
             return;
         }
 
-        int result = BraidNative.start();
-        if (result == 0) {
-            setStatus(getString(R.string.state_running));
-            toast(R.string.toast_started);
-        } else {
-            setStatus(getString(R.string.state_start_failed));
-            showDialog(getString(R.string.dialog_start_failed_title), BraidNative.lastError());
-        }
+        // Runtime nyata: serahkan ke layar game yang punya Surface, loop frame,
+        // dan input. start() dipanggil oleh GameActivity, bukan di sini.
+        startActivity(new Intent(this, GameActivity.class));
+        setStatus(getString(R.string.state_opening_game));
     }
 
     private void openImportPicker() {

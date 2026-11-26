@@ -14,7 +14,7 @@ Repo ini **bukan** emulator dan **bukan** recompiler. Repo ini adalah **launcher
 |---|---|---|
 | UI launcher + gamepad | ✅ ada | `MainActivity`, layout scrollable, semua tombol ada listener |
 | Import metadata lokal | ✅ ada | SAF + fallback, SHA-256, magic bytes, progres |
-| JNI contract + stub | ✅ ada | `BraidNative`, `libbraid_stub.so` |
+| JNI contract + stub | ✅ ada | `BraidNative` + `GameActivity`, `libbraid_stub.so` |
 | Build Android/NDK | ✅ ada | AGP 8.6, NDK 27, CMake, `arm64-v8a` |
 | CI + repo guard | ✅ ada | `.github/workflows/build.yml`, `check_repo_clean.sh` |
 | Recompiler output | ❌ belum | Bergantung pada salinan sah + tool upstream |
@@ -34,8 +34,8 @@ Repo ini **bukan** emulator dan **bukan** recompiler. Repo ini adalah **launcher
 | 6 | Audio + XMA + reverse playback | Mekanik waktu Braid memutar audio terbalik | ❌ | Decoder lokal + sink Android |
 | 7 | VFS / asset | Level, tekstur, musik, teks ada di paket game | ❌ | Mapping path ke file pengguna |
 | 8 | Timing deterministik | Rewind & time-manipulation sensitif terhadap timestep | ❌ | Fixed timestep, state buffer |
-| 9 | Input gamepad + fallback touch | Platformer presisi butuh analog + deadzone | ⚠️ sebagian | Deteksi sudah ada, mapping belum |
-| 10 | Android platform layer | JNI, Surface lifecycle, audio, SAF, performa | ⚠️ kerangka | Lengkapi bagain 4.9 |
+| 9 | Input gamepad + fallback touch | Platformer presisi butuh analog + deadzone | ✅ kerangka | `GameActivity` membersihkan tombol/axis; tinggal map ke XInput HLE |
+| 10 | Android platform layer | JNI, Surface lifecycle, audio, SAF, performa | ✅ kerangka | Implementasi native sesuai [INTEGRATION.md](INTEGRATION.md) |
 | 11 | Build & packaging | NDK, ABI, signing, tanpa asset di repo | ✅ stub | Tambahkan sumber recompile saat ada |
 | 12 | QA per world | Rewind mudah rusak karena float/timing | ❌ | Matriks uji bagain 4.11 |
 
@@ -121,17 +121,17 @@ Mitigasi: fixed timestep, simpan state ringkas per tick, uji tiap world dengan r
 
 ### 4.8 Input
 
-- Sudah ada: deteksi gamepad + tombol A/B via `KeyEvent`.
-- Belum: mapping analog stick, deadzone, trigger, D-pad ke state `XInput`, dan fallback kontrol sentuh yang didesain ulang (bukan sekadar tombol virtual).
+- Sudah ada: `GameActivity` mengirim state tombol (`A/B/X/Y/LB/RB/DPAD/START/TOUCH`) dan axis X/Y ternormalisasi lewat JNI.
+- Masih harus di native: mapping state itu ke `XInputGetState`, deadzone analog & trigger, dan fallback kontrol sentuh yang benar-benar didesain ulang (bukan sekadar tombol virtual).
 
 ### 4.9 Android platform layer
 
 | Item | Catatan |
 |---|---|
 | NDK + ABI | `arm64-v8a`, NDK 27, CMake 3.22 (sudah di CI) |
-| JNI | `BraidNative.start/version/lastError`, symbol `Java_com_braid_android_BraidNative_*` |
+| JNI | `BraidNative` (start/stop/frame/surface/input/audio), symbol `Java_com_braid_android_BraidNative_*` |
 | Library | `libbraid.so` hasil recompile di `jniLibs/arm64-v8a/` (di-ignore git); fallback `libbraid_stub.so` |
-| Surface | `SurfaceView`/`TextureView` + lifecycle Activity |
+| Surface | `GameActivity` + `SurfaceView` + `ANativeWindow`, callback lengkap |
 | Audio | AAudio / OpenSL ES |
 | Storage | SAF untuk memilih file milik pengguna |
 | Lifecycle | onPause/onResume: hentikan tick & audio, jangan boros baterai |
@@ -155,13 +155,13 @@ Mitigasi: fixed timestep, simpan state ringkas per tick, uji tiap world dengan r
 
 | Milestone | Kriteria |
 |---|---|
-| M0 ✅ | APK stub build di CI, tombol merespons, import metadata jalan |
+| M0 ✅ | APK stub build di CI, tombol merespons, import metadata jalan, layar game + loop frame + input tersedia |
 | M1 | Source C++ hasil recompile build di host PC |
 | M2 | Boot dengan renderer null, log tidak error fatal |
 | M3 | HLE file/input/waktu → menu Braid tampil |
 | M4 | Renderer Vulkan/GES → sprite & level tampil |
 | M5 | Audio + reverse playback sinkron |
-| M6 | `libbraid.so` jalan di HP via `BraidNative.start()` |
+| M6 | `libbraid.so` jalan di HP via `GameActivity` + `BraidNative.start()` |
 | M7 | Rewind deterministik + uji performa lintas world |
 
 ## 6. Risiko
@@ -177,8 +177,8 @@ Mitigasi: fixed timestep, simpan state ringkas per tick, uji tiap world dengan r
 ## 7. Langkah berikutnya di repo ini
 
 1. Ganti `libbraid_stub.so` dengan `libbraid.so` hasil recompile Anda (lokal).
-2. Implementasikan tiga symbol JNI di [INTEGRATION.md](INTEGRATION.md).
-3. Tambahkan `SurfaceView` + renderer saat HLE dasar sudah boot.
+2. Implementasikan semua symbol JNI di [INTEGRATION.md](INTEGRATION.md) di library Anda.
+3. Isi renderer di `nativeSurfaceCreated/Changed/Frame` saat HLE dasar sudah boot.
 4. Isi `analysis/` (di-ignore git) dengan hasil import tiap salinan sah untuk perbandingan versi.
 
 ## 8. Yang tidak disediakan repo ini

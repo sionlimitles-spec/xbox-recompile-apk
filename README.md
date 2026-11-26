@@ -12,7 +12,8 @@ Launcher Android **khusus target Braid** (Xbox 360 / XBLA) sebagai titik integra
   - deteksi magic (`XEX`, `CON`/`STFS`, `XBE`, ZIP/RAR/7z, ELF),
   - progres saat hashing file besar, fallback picker bila DocumentsUI tidak ada.
 - Tombol, kartu koleksi, dan ikon semuanya benar-benar merespons (ripple + Toast/dialog).
-- Tombol **Play** memanggil JNI `BraidNative.start()` bila runtime asli tersedia; saat masih stub, diberi penjelasan yang jelas.
+- Tombol **Play** membuka `GameActivity` bila `libbraid.so` nyata tersedia; saat masih stub, diberi penjelasan yang jelas.
+- `GameActivity`: `SurfaceView` + loop 60 fps + input gamepad/sentuh (`XInput`-like) + siklus audio JNI — siap dipakai runtime hasil recompile.
 - `libbraid_stub.so` bawaan supaya launcher bisa diuji tanpa runtime game.
 - Diagnostik: ABI, versi native, daftar gamepad, status library.
 
@@ -67,7 +68,7 @@ Detail lengkap + kesenjangan yang masih harus dikerjakan: [docs/BRAID-REQUIREMEN
 **Scaffold + stub fungsional.** Target: **Braid (Xbox 360 / XBLA)**.
 
 - ✅ UI interaktif & import metadata lokal
-- ✅ JNI stub + kontrak library
+- ✅ JNI stub + kontrak library + layar game (surface/frame/input/audio)
 - ✅ CI build & guard repo
 - ❌ Belum ada recompiler output, HLE XDK, renderer, audio, atau data game
 

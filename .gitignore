@@ -19,6 +19,7 @@ launcher/.gradle/
 launcher/app/build/
 launcher/local.properties
 launcher/app/src/main/jniLibs/
+launcher/app/src/main/cpp/game/
 
 # Keystore / rahasia
 *.keystore

@@ -1,56 +1,65 @@
-# Integrasi native library ke Braid Android
+# Integrasi runtime native ke Braid Android
 
-Launcher memuat library native saat `Activity` dibuat. Urutannya sengaja dibuat **fallback** supaya aplikasi tetap bisa diuji tanpa runtime game.
+Launcher sekarang punya **layar game penuh** (`GameActivity`) dengan `SurfaceView`, loop frame 60 fps, input gamepad/sentuh, dan siklus audio. Semua itu memanggil JNI di `BraidNative`. Yang belum ada cuma **implementasi native-nya** — itulah yang harus diisi dari hasil recompile Anda.
 
-## Urutan pemuatan (`BraidNative.load()`)
+## Urutan pemuatan library
 
-1. `libbraid.so` — **hasil recompile Anda**, ditaruh lokal di:
-   ```text
-   launcher/app/src/main/jniLibs/arm64-v8a/libbraid.so
-   ```
-   Folder `jniLibs/` sudah di-ignore git.
-2. `libbraid_stub.so` — stub bawaan repo, dibangun dari `launcher/app/src/main/cpp/`.
-3. Kalau keduanya gagal dimuat, launcher tetap tampil dan statusnya "BELUM SIAP".
+`BraidNative.load()`:
 
-Memisahkan nama `libbraid.so` dan `libbraid_stub.so` mencegah bentrok saat Anda menaruh library hasil recompile (stub tidak menimpa library Anda).
+1. `libbraid.so` — hasil recompile Anda, lokal di `launcher/app/src/main/jniLibs/arm64-v8a/libbraid.so` (di-ignore git).
+2. `libbraid_stub.so` — stub bawaan repo (`launcher/app/src/main/cpp/`), fallback supaya launcher tetap bisa diuji.
+3. Kalau keduanya gagal, status "BELUM SIAP".
+
+Nama beda supaya stub tidak menimpa library Anda.
+
+## Alur saat tombol Play
+
+```text
+MainActivity.onPlay()
+   ├─ library belum ada / masih stub → dialog penjelasan, tidak masuk game
+   └─ libbraid.so nyata → GameActivity
+          ├─ BraidNative.start()            (0 = sukses)
+          ├─ surfaceCreated → nativeSurfaceCreated(Surface)
+          ├─ surfaceChanged → nativeSurfaceChanged(w, h)
+          ├─ loop 60 fps  → nativeFrame(nowMs)
+          ├─ input        → nativeSetButton / nativeSetAxis
+          ├─ onResume     → nativeAudioInit
+          ├─ onPause      → nativeAudioShutdown
+          └─ onDestroy    → nativeStop + nativeSurfaceDestroyed
+```
 
 ## Kontrak JNI
 
-Deklarasi di Java (`com.braid.android.BraidNative`):
+Semua fungsi memakai prefix `Java_com_braid_android_BraidNative_` + nama method di bawah.
 
-```java
-private static native int nativeStart();
-private static native String nativeVersion();
-private static native String nativeLastError();
-```
-
-Simbol yang harus diekspor oleh `libbraid.so` Anda:
-
-```c
-JNIEXPORT jint JNICALL
-Java_com_braid_android_BraidNative_nativeStart(JNIEnv *env, jclass clazz);
-
-JNIEXPORT jstring JNICALL
-Java_com_braid_android_BraidNative_nativeVersion(JNIEnv *env, jclass clazz);
-
-JNIEXPORT jstring JNICALL
-Java_com_braid_android_BraidNative_nativeLastError(JNIEnv *env, jclass clazz);
-```
-
-Kontrak:
-
-| Fungsi | Return | Arti |
+| Method Java | Tanda tangan C | Catatan |
 |---|---|---|
-| `nativeStart` | `0` | runtime berhasil dimulai |
-| `nativeStart` | nonzero | gagal; detail dari `nativeLastError()` |
-| `nativeVersion` | string | versi runtime, misalnya `0.3.0-braid` |
-| `nativeLastError` | string | pesan error terakhir |
+| `nativeStart` | `jint (JNIEnv*, jclass)` | `0` = sukses; nonzero = error |
+| `nativeStop` | `void (JNIEnv*, jclass)` | hentikan runtime |
+| `nativeVersion` | `jstring (JNIEnv*, jclass)` | versi runtime |
+| `nativeLastError` | `jstring (JNIEnv*, jclass)` | pesan error terakhir |
+| `nativeSurfaceCreated` | `void (JNIEnv*, jclass, jobject surface)` | ambil `ANativeWindow` via `ANativeWindow_fromSurface` |
+| `nativeSurfaceChanged` | `void (JNIEnv*, jclass, jint w, jint h)` | `ANativeWindow_setBuffersGeometry` |
+| `nativeSurfaceDestroyed` | `void (JNIEnv*, jclass)` | `ANativeWindow_release` |
+| `nativeFrame` | `void (JNIEnv*, jclass, jlong nowMs)` | gambar satu frame ke surface |
+| `nativeSetButton` | `void (JNIEnv*, jclass, jint button, jboolean down)` | state tombol |
+| `nativeSetAxis` | `void (JNIEnv*, jclass, jint axis, jfloat value)` | axis `-1..1` |
+| `nativeAudioInit` | `void (JNIEnv*, jclass)` | siapkan backend audio |
+| `nativeAudioShutdown` | `void (JNIEnv*, jclass)` | matikan audio |
 
-Package sebelumnya `com.example.xboxrecompile` sudah **tidak dipakai**. Kalau Anda punya library lama, export ulang symbol di atas atau tambahkan wrapper dengan nama baru.
+### Indeks tombol (`GameActivity`)
+
+`A=0, B=1, X=2, Y=3, LB=4, RB=5, UP=6, DOWN=7, LEFT=8, RIGHT=9, START=10, TOUCH=11`
+
+Tombol fisik dipetakan dari `KEYCODE_BUTTON_*` / DPAD. Sentuh layar mengisi `axis 0` (X) dan `axis 1` (Y) ternormalisasi, plus `TOUCH` ditekan. Mapping ini sengaja menyerupai `XInputGetState` supaya HLE tidak perlu tahu soal Android.
+
+### Audio
+
+`nativeAudioInit`/`nativeAudioShutdown` adalah tempat memasang AAudio (API 26+) atau OpenSL ES (API 21+). Decode XMA dan **reverse playback** tetap menjadi tanggung jawab runtime native — lihat [BRAID-REQUIREMENTS.md](BRAID-REQUIREMENTS.md).
 
 ## Perilaku stub
 
-`libbraid_stub.so` hanya mencatat log dan mengembalikan `-1` dari `nativeStart()`. Tombol **Play** akan menampilkan dialog penjelasan, bukan mengklaim game berjalan. Ini disengaja agar status aplikasi jujur.
+`libbraid_stub.so` mengimplementasikan semua symbol di atas sebagai no-op; `nativeStart()` mengembalikan `-1`. Karena itu `GameActivity` **tidak pernah terbuka** saat library masih stub — launcher terus terang memberi tahu pengguna.
 
 ## Build
 
@@ -62,25 +71,25 @@ export ANDROID_HOME=/path/ke/android-sdk
 ./scripts/package_apk.sh
 ```
 
-Output: `dist/braid-android-debug.apk`.
+CMake (`src/main/cpp/CMakeLists.txt`) membangun `libbraid_stub.so` untuk `arm64-v8a`, menautkan `log` dan `android` (dibutuhkan `ANativeWindow`).
 
-Gradle akan membangun `libbraid_stub.so` via CMake (`src/main/cpp/CMakeLists.txt`) untuk ABI `arm64-v8a` dengan NDK 27.0.12077973.
+## Memasang library hasil recompile
 
-## Alur integrasi runtime nyata
+1. Bangun `libbraid.so` (`arm64-v8a`) dari source hasil recompiler + HLE + renderer.
+2. Export semua symbol JNI di atas (boleh tambah `extern "C"` di file JNI Anda).
+3. Taruh di `launcher/app/src/main/jniLibs/arm64-v8a/libbraid.so` **(lokal, jangan di-commit)**.
+4. Build & install. Buka **Diagnostik** di launcher — status native harus terbaca "siap", bukan "stub".
+5. Tekan **Play**; kalau `nativeStart()` mengembalikan error, pesan dari `nativeLastError()` muncul.
 
-1. Hasilkan C++ dari XEX milik Anda dengan recompiler upstream.
-2. Tambahkan runtime/HLE, renderer, audio, dan input — lihat [BRAID-REQUIREMENTS.md](BRAID-REQUIREMENTS.md).
-3. Build dengan NDK menjadi `libbraid.so` (`arm64-v8a`).
-4. Taruh di `jniLibs/arm64-v8a/` (lokal, jangan di-commit).
-5. Pastikan tiga symbol JNI di atas diekspor.
-6. Jalankan APK, buka tombol **Diagnostik** (ikon kanan atas) untuk memastikan library terbaca sebagai "siap", bukan "stub".
+## Yang masih harus ditulis di sisi native
 
-## Yang masih belum ada
+- Implementasi `nativeStart`/`nativeStop` + state game.
+- Renderer Vulkan/GLES ke `ANativeWindow`.
+- Map `nativeSetButton`/`nativeSetAxis` ke state XInput HLE.
+- Backend audio + XMA + reverse playback.
+- VFS asset dari salinan sah pengguna.
 
-- Implementasi `nativeStart()` nyata (sengaja bergantung pada hasil recompile Anda).
-- `SurfaceView` + renderer Vulkan/GLES.
-- Mapping event input Android ke state XInput.
-- Backend audio AAudio/OpenSL ES.
+Sisi Java sudah siap; tidak perlu diubah kecuali Anda menambah kontrol sentuh khusus.
 
 ## Pengingat
 
