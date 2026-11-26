@@ -14,6 +14,9 @@ Repo ini dibuat untuk eksperimen teknis dengan **konten yang Anda miliki secara 
 - Membagikan APK hasil recompile dari game komersial.
 - Memakai repo ini untuk menghindari DRM atau pembatasan lisensi.
 - Mengklaim kode/asset game orang lain sebagai milik Anda.
+- Memakai repo ini sebagai dalih bahwa "orang lain yang mengunduh ISO-nya". Repo ini **tidak** menyediakan, merekomendasikan, atau mengarahkan ke sumber ISO/ROM/XEX mana pun, dan tidak memfasilitasi pengunduhan game.
+
+Kepemilikan salinan game yang sah **harus** berada di tangan pengguna yang menjalankan recompile. Jika tidak ada salinan sah, jangan pakai repo ini untuk judul tersebut.
 
 ## Penafian
 

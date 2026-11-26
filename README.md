@@ -15,8 +15,10 @@ Eksperimen **native recompile** judul Xbox (XBE/XEX) menjadi aplikasi Android, m
 ## Yang TIDAK ada di sini
 
 - File game, disc image, atau asset dari judul mana pun.
-- Skrip untuk membongkar/ripping disc atau melewati DRM.
+- Tautan/sumber unduhan ISO/ROM/XEX, atau skrip ripping/decrypt/DRM bypass.
 - APK siap pakai dari game komersial.
+
+Pengguna wajib memiliki salinan game secara sah. Lihat [docs/LEGAL.md](docs/LEGAL.md).
 
 ## Mulai cepat
 

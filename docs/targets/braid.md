@@ -26,6 +26,48 @@
 
 Catatan: **tidak ada rilis Braid untuk Xbox generasi pertama**, jadi `XboxXBE-Recomp` bukan jalur yang tepat. Kalau memang Xbox, berarti Xbox 360.
 
+## Peta toolchain (tingkat tinggi)
+
+```text
+XBLA XEX (milik pengguna, sah)
+        ↓  analisa statis, bukan ripping/decrypting otomatis
+XenonRecomp / ReXGlue → C++ portabel
+        ↓  HLE untuk impor XDK (file, input, audio, render, save)
+kode native + virtual filesystem asset
+        ↓  Android NDK, ABI arm64-v8a
+libbraid.so → launcher Android (stub di repo ini) → APK
+```
+
+Yang perlu disiapkan/dipelajari (perkiraan, harus diverifikasi dari biner nyata):
+
+- **Impor XDK**: `XFile`/`XFileSystem`, `XInput`, `XAudio2`/audio stream, `XUser`/profile, `XContent`/title update, font dan text, video/movie bila ada.
+- **Render**: Braid memakai engine 2D custom di atas Direct3D 9 Xbox 360. Renderer host perlu menerjemahkan tekstur, sprite, blend, dan efek blur/partikel ke Vulkan/OpenGL ES.
+- **Manajemen memori XEX**: heap, alignment, dan tata letak data big-endian PowerPC perlu emulator VM yang konsisten.
+- **Determinisme waktu**: mekanik rewind menyimpan riwayat state. Perbedaan kecil pada timestep atau floating point bisa merusak puzzle.
+- **Audio**: trek Magnatune diputar juga dalam bentuk terbalik untuk efek world tertentu — backend audio harus mendukung playback mundur/effects.
+- **Kontrol**: platformer presisi lebih cocok dengan gamepad; kontrol sentuh sebagai fallback perlu desain ulang, bukan sekadar tombol virtual.
+
+Titik integrasi di repo ini: `launcher/app/src/main/jniLibs/arm64-v8a/` (di-ignore git) untuk native library hasil build, lalu Activity di `launcher/` yang memanggil entry point game.
+
+## Milestone yang disarankan
+
+1. Analisa impor/XDK dan daftar fungsi yang perlu HLE.
+2. Build C++ hasil recompile untuk host PC, jalankan dengan renderer null.
+3. HLE input + audio + file, sampai menu utama tampil.
+4. Renderer Vulkan/OpenGL ES dasar, lalu sprite/efek Braid.
+5. Port ke Android NDK, uji gamepad Bluetooth/OTG.
+6. Test savestate/rewind tiap world dan performa di perangkat low-end.
+
+Estimasi realistis: **minggu–bulan**, tergantung seberapa banyak impor XDK yang belum ter-cover.
+
+## Yang TIDAK disediakan repo ini
+
+- Sumber ISO/XEX/ROM, tautan unduhan, atau nama situs penyedia game.
+- Skrip ripping disc, decrypt XEX, atau bypass DRM/lisensi.
+- File asset, audio, atau teks dari Braid.
+
+Lihat [LEGAL.md](../LEGAL.md). Kalau Anda tidak memiliki salinan sah, repo ini tidak bisa dipakai untuk target Braid.
+
 ## Status di repo ini
 
 - Target **direncanakan**, bukan sudah didukung.
