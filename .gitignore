@@ -1,0 +1,28 @@
+# Data game — jangan pernah di-commit
+*.iso
+*.xbe
+*.xex
+*.bin
+*.rom
+game_data/
+games/
+configs/*.local.toml
+
+# Hasil build
+*.apk
+*.aab
+dist/
+launcher/.gradle/
+launcher/app/build/
+launcher/local.properties
+launcher/app/src/main/jniLibs/
+
+# Keystore / rahasia
+*.keystore
+*.jks
+*.p12
+*.pem
+
+# Umum
+.DS_Store
+*.log

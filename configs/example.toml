@@ -1,0 +1,16 @@
+# Contoh konfigurasi. Jangan isi dengan path game sungguhan di repo.
+[game]
+id = "example-title"
+title = "Contoh Judul (placeholder)"
+source = ""
+platform = "original-xbox" # atau "xbox-360"
+license_note = "Salinan sah milik sendiri; tidak didistribusikan."
+
+[recompile]
+tool = "XboxXBE-Recomp"
+abi = "arm64-v8a"
+min_sdk = 21
+
+[output]
+include_game_data = false
+apk_name = "xbox-recompile-launcher"
