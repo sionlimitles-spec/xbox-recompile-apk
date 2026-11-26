@@ -165,7 +165,7 @@
                     android:contentDescription="@string/btn_refresh_desc"
                     android:padding="11dp"
                     android:scaleType="centerInside"
-                    android:src="@android:drawable/ic_menu_refresh" />
+                    android:src="@drawable/ic_refresh" />
 
             </LinearLayout>
 
