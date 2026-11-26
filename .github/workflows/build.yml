@@ -17,11 +17,15 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
+      # ubuntu-latest sudah membawa Android SDK di /usr/local/lib/android/sdk.
       - name: Install Android SDK packages
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -path '*/bin/sdkmanager' -print -quit)"
+          [[ -n "$SDKMANAGER" ]] || { echo "sdkmanager tidak ditemukan" >&2; exit 1; }
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -31,7 +35,7 @@ jobs:
 
       - name: Build stub launcher
         env:
-          ANDROID_HOME: ${{ runner.temp }}/android-sdk
+          ANDROID_HOME: /usr/local/lib/android/sdk
         run: ./scripts/build_launcher.sh
 
       - name: Upload stub APK
