@@ -1,26 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0B0E14"
-    android:fillViewport="true">
+    android:background="#0B0E14">
 
+    <!-- Layer 1: Hero Background -->
+    <ImageView
+        android:id="@+id/hero_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/sym_def_app_icon" />
+
+    <!-- Layer 1b: Hero Overlay (gradient) -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/hero_overlay" />
+
+    <!-- Layer 2a: Top Bar Kiri (kartu ikon horizontal) -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Kartu 1: Collection -->
+            <LinearLayout
+                android:layout_width="96dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/icon_card_bg"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@android:drawable/sym_def_app_icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Collection"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <!-- Kartu 2: Game 1 -->
+            <LinearLayout
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/icon_card_bg"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@android:drawable/sym_def_app_icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Game 1"
+                    android:textColor="#8FA3BF"
+                    android:textSize="9sp" />
+            </LinearLayout>
+
+            <!-- Kartu 3: Game 2 -->
+            <LinearLayout
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/icon_card_bg"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@android:drawable/sym_def_app_icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Game 2"
+                    android:textColor="#8FA3BF"
+                    android:textSize="9sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <!-- Layer 2b: Top Bar Kanan (ikon bulat) -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/controller_icon_bg"
+            android:contentDescription="@string/app_name"
+            android:src="@android:drawable/ic_menu_sort_by_size" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/controller_icon_bg"
+            android:contentDescription="@string/app_name"
+            android:src="@android:drawable/ic_menu_info_details" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/controller_icon_bg"
+            android:contentDescription="@string/app_name"
+            android:src="@android:drawable/ic_menu_agenda" />
+
+    </LinearLayout>
+
+    <!-- Layer 3: Hero Info & Action Buttons (tengah-kiri bawah) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="80dp">
 
+        <!-- Judul & subtitle -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/title"
+            android:text="@string/hero_title"
             android:textColor="#FFFFFF"
-            android:textSize="22sp"
+            android:textSize="28sp"
             android:textStyle="bold" />
 
         <View
-            android:layout_width="64dp"
+            android:layout_width="80dp"
             android:layout_height="3dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/accent_bar" />
@@ -28,98 +172,112 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="@string/subtitle"
+            android:layout_marginTop="8dp"
+            android:text="@string/hero_metadata"
             android:textColor="#8FA3BF"
-            android:textSize="13sp" />
+            android:textSize="14sp" />
 
+        <!-- Tombol pill (Play utama + sekunder) -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:background="@drawable/card_bg"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal">
 
-            <TextView
+            <Button
+                android:id="@+id/btn_play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/section_gamepad"
-                android:textColor="#0078D7"
-                android:textSize="12sp"
+                android:background="@drawable/button_primary"
+                android:onClick="onPlayClick"
+                android:text="@string/btn_play"
+                android:textColor="#000000"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/gamepad_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/gamepad_empty"
-                android:textColor="#E6EDF7"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/card_bg"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
+            <Button
+                android:id="@+id/btn_import"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/section_library"
-                android:textColor="#0078D7"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:layout_marginStart="12dp"
+                android:background="@drawable/button_secondary"
+                android:onClick="onImportClick"
+                android:text="@string/btn_import"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/library_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/library_missing"
-                android:textColor="#E6EDF7"
-                android:textSize="15sp" />
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/card_bg"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/section_target"
-                android:textColor="#0078D7"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/target_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/target_value"
-                android:textColor="#E6EDF7"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/hint"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/hint"
-            android:textColor="#8FA3BF"
-            android:textSize="12sp" />
 
     </LinearLayout>
 
-</ScrollView>
+    <!-- Layer 4: Controller Hints (pojok kanan bawah) -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="24dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@drawable/controller_icon_bg"
+                android:contentDescription="@string/hint_play"
+                android:src="@android:drawable/ic_menu_revert" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/hint_play"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@drawable/controller_icon_bg"
+                android:contentDescription="@string/hint_back"
+                android:src="@android:drawable/ic_menu_close_clear_cancel" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/hint_back"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Status bar kecil di bawah (opsional, untuk state) -->
+    <TextView
+        android:id="@+id/status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#660B0E14"
+        android:padding="8dp"
+        android:text="@string/state_not_ready"
+        android:textColor="#8FA3BF"
+        android:textSize="11sp" />
+
+</FrameLayout>

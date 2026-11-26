@@ -5,6 +5,9 @@ import android.content.Context;
 import android.hardware.input.InputManager;
 import android.os.Bundle;
 import android.view.InputDevice;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Locale;
@@ -15,6 +18,10 @@ public class MainActivity extends Activity {
     private TextView libraryStatusView;
     private TextView targetStatusView;
     private TextView hintView;
+    private TextView statusBar;
+    private Button btnPlay;
+    private Button btnImport;
+    private ImageView heroBg;
     private boolean nativeLibraryLoaded = false;
 
     // Kontrak JNI minimal; diimplementasikan oleh libbraid.so hasil recompile.
@@ -43,10 +50,23 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Immersive mode: full-screen tanpa status bar
+        getWindow().getDecorView().setSystemUiVisibility(
+                android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | android.view.View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
         gamepadStatusView = findViewById(R.id.gamepad_status);
         libraryStatusView = findViewById(R.id.library_status);
         targetStatusView = findViewById(R.id.target_status);
         hintView = findViewById(R.id.hint);
+        statusBar = findViewById(R.id.status_bar);
+        btnPlay = findViewById(R.id.btn_play);
+        btnImport = findViewById(R.id.btn_import);
+        heroBg = findViewById(R.id.hero_bg);
 
         loadNativeLibrary();
         refresh();
@@ -110,6 +130,10 @@ public class MainActivity extends Activity {
                 : R.string.library_missing));
         targetStatusView.setText(getString(R.string.target_value));
         hintView.setText(buildStateHint(gamepadFound));
+
+        // Animate status bar
+        statusBar.setText(buildStateHint(gamepadFound));
+        statusBar.startAnimation(AnimationUtils.loadAnimation(this, R.animator.fade_in));
     }
 
     private String buildStateHint(boolean gamepadFound) {
@@ -120,5 +144,19 @@ public class MainActivity extends Activity {
             return getString(R.string.state_library_only);
         }
         return getString(R.string.state_ready);
+    }
+
+    // ===== Click handlers untuk tombol pill =====
+
+    public void onPlayClick(android.view.View view) {
+        // TODO: Trigger nativeStart() setelah libbraid.so siap
+        // Untuk sekarang, hanya tampilkan status
+        statusBar.setText(getString(R.string.state_import));
+    }
+
+    public void onImportClick(android.view.View view) {
+        // TODO: Buka file dialog → panggil analyze_local.py → update UI
+        // Untuk sekarang, hanya tampilkan status import
+        statusBar.setText(getString(R.string.state_import));
     }
 }
