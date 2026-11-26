@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Xbox Recompile Launcher</string>
-    <string name="status_initial">Memuat…</string>
+    <string name="title">XBOX RECOMPILE</string>
+    <string name="subtitle">Launcher · diagnostik lokal</string>
+
+    <string name="section_gamepad">GAMEPAD</string>
+    <string name="section_library">NATIVE LIBRARY</string>
+    <string name="section_target">TARGET</string>
+
+    <string name="gamepad_empty">Belum ada gamepad. Hubungkan via Bluetooth/OTG.</string>
+    <string name="library_missing">libbraid.so belum ada di jniLibs/arm64-v8a/.</string>
+    <string name="library_ready">libbraid.so termuat.</string>
+    <string name="target_value">Braid · Xbox 360 (XBLA)</string>
+    <string name="hint">Stub launcher. Lihat docs/UI.md untuk state dan alur UI.</string>
+
+    <string name="state_not_ready">Status: BELUM SIAP — tambahkan libbraid.so.</string>
+    <string name="state_library_only">Status: LIBRARY SIAP — gamepad belum terhubung.</string>
+    <string name="state_ready">Status: SIAP — gamepad dan library tersedia.</string>
 </resources>

@@ -11,7 +11,10 @@ import java.util.Locale;
 
 public class MainActivity extends Activity {
 
-    private TextView statusView;
+    private TextView gamepadStatusView;
+    private TextView libraryStatusView;
+    private TextView targetStatusView;
+    private TextView hintView;
     private boolean nativeLibraryLoaded = false;
 
     // Kontrak JNI minimal; diimplementasikan oleh libbraid.so hasil recompile.
@@ -39,7 +42,12 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        statusView = findViewById(R.id.status);
+
+        gamepadStatusView = findViewById(R.id.gamepad_status);
+        libraryStatusView = findViewById(R.id.library_status);
+        targetStatusView = findViewById(R.id.target_status);
+        hintView = findViewById(R.id.hint);
+
         loadNativeLibrary();
         refresh();
     }
@@ -73,14 +81,12 @@ public class MainActivity extends Activity {
     }
 
     private void refresh() {
-        if (statusView == null) {
+        if (gamepadStatusView == null) {
             return;
         }
 
-        StringBuilder text = new StringBuilder("Xbox Recompile Launcher\n\n");
-        text.append("Gamepad terdeteksi:\n");
-
-        boolean found = false;
+        boolean gamepadFound = false;
+        StringBuilder devices = new StringBuilder();
         InputManager im = (InputManager) getSystemService(Context.INPUT_SERVICE);
         if (im != null) {
             for (int deviceId : im.getInputDeviceIds()) {
@@ -89,23 +95,30 @@ public class MainActivity extends Activity {
                     continue;
                 }
                 if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD) {
-                    found = true;
-                    text.append(String.format(Locale.getDefault(),
+                    gamepadFound = true;
+                    devices.append(String.format(Locale.getDefault(),
                             "- %s (vendor 0x%04X, product 0x%04X)\n",
                             device.getName(), device.getVendorId(), device.getProductId()));
                 }
             }
         }
 
-        if (!found) {
-            text.append("- Belum ada. Hubungkan gamepad Xbox via Bluetooth/OTG.\n");
-        }
+        gamepadStatusView.setText(
+                gamepadFound ? devices.toString() : getString(R.string.gamepad_empty));
+        libraryStatusView.setText(getString(nativeLibraryLoaded
+                ? R.string.library_ready
+                : R.string.library_missing));
+        targetStatusView.setText(getString(R.string.target_value));
+        hintView.setText(buildStateHint(gamepadFound));
+    }
 
-        text.append("\nNative library: ");
-        text.append(nativeLibraryLoaded
-                ? "libbraid.so termuat."
-                : "belum ada (letakkan di jniLibs/arm64-v8a/).");
-        text.append("\nStatus: stub launcher. Lihat docs/INTEGRATION.md untuk menyambungkan entry point game.");
-        statusView.setText(text.toString());
+    private String buildStateHint(boolean gamepadFound) {
+        if (!nativeLibraryLoaded) {
+            return getString(R.string.state_not_ready);
+        }
+        if (!gamepadFound) {
+            return getString(R.string.state_library_only);
+        }
+        return getString(R.string.state_ready);
     }
 }
