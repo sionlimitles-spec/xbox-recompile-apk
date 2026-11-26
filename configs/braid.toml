@@ -1,0 +1,16 @@
+# Placeholder untuk target Braid. Jangan isi dengan path game sungguhan di repo.
+[game]
+id = "braid"
+title = "Braid (placeholder)"
+source = ""
+platform = "xbox-360" # XBLA, PowerPC Xenon
+license_note = "Salinan sah milik sendiri; tidak didistribusikan."
+
+[recompile]
+tool = "XenonRecomp / ReXGlue"
+abi = "arm64-v8a"
+min_sdk = 21
+
+[output]
+include_game_data = false
+apk_name = "braid-recompile-stub"

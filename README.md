@@ -8,7 +8,7 @@ Eksperimen **native recompile** judul Xbox (XBE/XEX) menjadi aplikasi Android, m
 
 - `launcher/` — stub aplikasi Android (Java) untuk mendeteksi gamepad Xbox via Bluetooth/OTG. Ini "cangkang" tempat kode native hasil recompile nanti dipasang.
 - `scripts/` — pengecekan environment, build launcher, dan packaging APK.
-- `docs/` — setup tooling, alur recompile, dan catatan hukum.
+- `docs/` — setup tooling, alur recompile, catatan hukum, dan catatan target ([Braid](docs/targets/braid.md)).
 - `configs/example.toml` — contoh konfigurasi (placeholder, tanpa path game sungguhan).
 - `.github/workflows/build.yml` — CI untuk membangun **stub launcher** (tanpa data game).
 
@@ -47,7 +47,7 @@ APK untuk pemakaian sendiri
 
 ## Status
 
-Scaffold. Belum ada target game tertentu yang ditanamkan di repo.
+Scaffold. Target yang direncanakan: **Braid** (Xbox 360 / XBLA) — lihat [docs/targets/braid.md](docs/targets/braid.md). Belum ada file game atau kode hasil recompile yang ditanamkan di repo.
 
 ## Lisensi
 
