@@ -1,55 +1,70 @@
-# UI/UX launcher — Gaya PS5/Console Launcher
+# UI/UX Braid Android — gaya console launcher
 
-Konsep UI mengikuti referensi **PS5 / Console Launcher**: layar penuh lanskap, hero image dinamis, kartu ikon horizontal di kiri atas, judul/logo di tengah-kiri, tombol pill di bawah, navigasi gamepad di pojok kanan bawah.
+Layar penuh lanskap, hero gelap, kartu ikon horizontal, judul di tengah-kiri, tombol pill, dan petunjuk gamepad. Sekarang **semua elemen yang terlihat seperti tombol benar-benar bisa diklik**.
 
-## Struktur berlapis (dari belakang ke depan)
+## Struktur
 
-| Layer | Komponen | Deskripsi |
+Lapisan belakang bersifat dekoratif dan `clickable="false"`:
+
+| Layer | Komponen | Catatan |
 |---|---|---|
-| **L1** | **Hero Background** | ImageView full-screen (`ContentScale.Crop`), gradient overlay gelap di kiri/bawah, canvas garis gelombang transparan (opsional). |
-| **L2a** | **Top Bar Kiri** | `HorizontalScrollView`/`ListView` kartu ikon bulat (sudut 16dp), aktif = border putih tebal + scale 1.1. |
-| **L2b** | **Top Bar Kanan** | Row ikon bulat (diameter 40–48dp), latar putih transparan (`alpha 0.15`), garis tepi tipis. |
-| **L3** | **Hero Info & Action** | Tengah-kiri: logo game (PNG transparan) + subjudul kecil. Action: tombol pill Play (putih solid), tombol pill sekunder (frosted glass, border tipis putih). |
-| **L4** | **Controller Hints** | Pojok kanan bawah: ikon lingkaran (X) Play dan (O) Back. |
+| L1 | `hero_bg` (ImageView) + `hero_overlay` (gradient) | Tidak pernah menangkap sentuhan |
+| L2 | `ScrollView` (`fillViewport`) | Satu-satunya layer interaktif penuh; semua kontrol ada di dalamnya |
 
-## File terkait
-- `launcher/app/src/main/res/layout/activity_main.xml` — layout layered (FrameLayout root).
-- `launcher/app/src/main/res/drawable/hero_overlay.xml` — gradient overlay gelap.
-- `launcher/app/src/main/res/drawable/icon_card_bg.xml` — rounded card untuk kartu ikon.
-- `launcher/app/src/main/res/drawable/button_primary.xml` — tombol pill putih solid.
-- `launcher/app/src/main/res/drawable/button_secondary.xml` — tombol pill transparan (frosted glass).
-- `launcher/app/src/main/res/drawable/controller_icon_bg.xml` — lingkaran transparan untuk indikator.
-- `launcher/app/src/main/res/animator/fade_in.xml` — animasi fade masuk.
-- `launcher/app/src/main/res/animator/fade_out.xml` — animasi fade keluar.
-- `launcher/app/src/main/res/values/styles.xml` — theme gelap + aksen.
-- `launcher/app/src/main/res/values/strings.xml` — teks UI.
+Di dalam `ScrollView`:
 
-## State machine (tetap)
+- **Top bar**: `HorizontalScrollView` berisi kartu **Koleksi** dan **Braid** (aktif), plus tiga `ImageButton` (info, diagnostik, refresh).
+- **Spacer fleksibel** supaya konten hero tidak menempel di atas pada layar tinggi; tetap bisa di-scroll di layar pendek.
+- **Hero**: judul `BRAID`, garis aksen, metadata platform, subtitle.
+- **Aksi**: tombol pill **Play** (putih) dan **Import Game** (frosted).
+- **Kartu import**: muncul setelah file dipilih, berisi metadata + progres.
+- **Hint gamepad**: `A Play`, `B Keluar` — juga bisa diklik.
+- **Status footer**: pesan keadaan launcher/runtime.
 
-| State | Gamepad | `libbraid.so` | Pesan |
+Kenapa `ScrollView`? Layout lama menumpuk banyak child `FrameLayout` penuh layar. Di layar pendek, konten bisa tertutup/terpotong. Sekarang tidak ada overlay yang menghalangi tombol, dan semua tombol tetap terjangkau.
+
+## Elemen interaktif
+
+| Elemen | Aksi | Feedback |
+|---|---|---|
+| Kartu Koleksi | dialog info target | dialog |
+| Kartu Braid | pilih target Braid | Toast + status |
+| Ikon ℹ | dialog "Tentang" | dialog |
+| Ikon diagnostik | paket, versi, ABI, native, gamepad, import | dialog |
+| Ikon refresh | pindai ulang gamepad | Toast + status |
+| **Play** | jalankan JNI bila runtime nyata; kalau stub → dialog penjelasan | Toast/dialog/status |
+| **Import Game** | buka file picker (SAF, fallback `GET_CONTENT`) | kartu import + progres |
+| `A Play` | sama seperti tombol Play | status |
+| `B Keluar` | `finish()` | keluar |
+| Gamepad A / DPAD_CENTER / B | sama seperti di atas | status |
+
+Setiap tombol memakai drawable `ripple` (`card_clickable`, `card_selected`, `pill_primary`, `pill_secondary`, `round_clickable`), jadi ada respons visual saat disentuh.
+
+## State machine
+
+| Keadaan | Native | Gamepad | Pesan |
 |---|---|---|---|
-| `BELUM SIAP` | apa saja | tidak ada | `Status: BELUM SIAP — tambahkan libbraid.so.` |
-| `LIBRARY SIAP` | tidak ada | termuat | `Status: LIBRARY SIAP — gamepad belum terhubung.` |
-| `IMPORT` | ada | apa saja | `Status: IMPORT — pilih file game.` |
-| `SIAP` | ada | termuat | `Status: SIAP — gamepad dan library tersedia.` |
+| `BELUM SIAP` | tidak termuat | apa saja | `libbraid.so tidak termuat` |
+| `STUB` | stub termuat | opsional | runtime game belum ditanamkan |
+| `RUNTIME SIAP` | nyata | tidak ada | gamepad belum terhubung |
+| `SIAP` | nyata | ada | runtime + gamepad tersedia |
+| `IMPORT` | — | — | membaca file / selesai |
 
 ## Import Game (lokal saja)
 
-Tombol **Import Game** membuka file picker sistem (`ACTION_OPEN_DOCUMENT`). File hanya **dibaca di perangkat** untuk metadata:
+Picker sistem (`ACTION_OPEN_DOCUMENT`, fallback `ACTION_GET_CONTENT`). File hanya dibaca di perangkat:
 
-- nama file
-- ukuran (byte)
-- SHA-256
-- 16 byte pertama (hex)
+- nama, ukuran (human readable + byte),
+- SHA-256 penuh,
+- 16 byte pertama (hex),
+- deteksi magic: `XEX`, `CON`/`STFS`/`PIRS`/`LIVE`, `XBE`, ZIP/RAR/7z, ELF,
+- ekstensi + catatan format (misal XBE → bukan target repo ini),
+- progres tiap 16 MB untuk file besar.
 
-Hasil tampil di kartu **IMPORT · FILE GAME** (muncul setelah pilih). **Tidak ada upload, tidak ada penyimpanan ke repo.** Pengingat hukum selalu ditampilkan.
+**Tidak ada upload, tidak ada penyalinan ke repo.** Pengingat hukum selalu ditampilkan di bawah laporan. Implementasi: `MainActivity.inspectUri()`.
 
-Implementasi: `MainActivity.inspectUri()` — baca via `ContentResolver`, hash via `MessageDigest`.
-
-## Animasi
-- **Fade-in/out** saat ganti state (`res/animator/fade_in.xml`, `res/animator/fade_out.xml`).
-- **Scale kartu** saat pilih ikon (`res/animator/scale_card.xml`).
-- **Slide horizontal** untuk ganti hero image (`res/animator/slide_hero.xml`).
+Lihat [INTEGRATION.md](INTEGRATION.md) untuk kontrak native dan [BRAID-REQUIREMENTS.md](BRAID-REQUIREMENTS.md) untuk analisa target.
 
 ## Kenapa belum bisa langsung main?
-Karena belum ada `libbraid.so`, renderer, dan runtime HLE. Launcher ini **diagnostik + titik integrasi**. Lihat [INTEGRATION.md](INTEGRATION.md).
+
+Karena belum ada hasil recompile, HLE, renderer, dan audio. Launcher ini **diagnostik + titik integrasi**, bukan APK game.

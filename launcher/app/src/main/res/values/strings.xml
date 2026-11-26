@@ -1,42 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Xbox Recompile Launcher</string>
+    <string name="app_name">Braid Android</string>
 
-    <!-- Hero info -->
-    <string name="hero_title">XBOX RECOMPILE</string>
-    <string name="hero_subtitle">Launcher · diagnostik lokal</string>
-    <string name="hero_metadata">Braid · Xbox 360 (XBLA) · Native recomp</string>
+    <!-- Hero -->
+    <string name="hero_title">BRAID</string>
+    <string name="hero_subtitle">Android · Native recomp</string>
+    <string name="hero_metadata">Xbox 360 (XBLA) · PowerPC → arm64-v8a</string>
 
-    <!-- Section labels -->
-    <string name="section_gamepad">GAMEPAD</string>
-    <string name="section_library">NATIVE LIBRARY</string>
-    <string name="section_target">TARGET</string>
+    <!-- Kartu koleksi -->
+    <string name="card_collection">Koleksi</string>
+    <string name="card_braid">Braid</string>
+    <string name="card_braid_sub">XBLA</string>
+
     <string name="section_import">IMPORT · FILE GAME (lokal saja)</string>
 
-    <!-- Status values -->
-    <string name="gamepad_empty">Belum ada gamepad. Hubungkan via Bluetooth/OTG.</string>
-    <string name="library_missing">libbraid.so belum ada di jniLibs/arm64-v8a/.</string>
-    <string name="library_ready">libbraid.so termuat.</string>
-    <string name="target_value">Braid · Xbox 360 (XBLA)</string>
+    <!-- Status -->
+    <string name="state_not_ready">Status: BELUM SIAP — libbraid.so tidak termuat.</string>
+    <string name="state_stub">Status: STUB — launcher aktif, runtime game belum ditanamkan.</string>
+    <string name="state_stub_gamepad">Status: STUB — gamepad terdeteksi, runtime game belum ditanamkan.</string>
+    <string name="state_ready_no_gamepad">Status: RUNTIME SIAP — gamepad belum terhubung.</string>
+    <string name="state_ready">Status: SIAP — runtime dan gamepad tersedia.</string>
+    <string name="state_importing">Status: IMPORT — membaca file…</string>
+    <string name="state_import_done">Status: IMPORT selesai — metadata ditampilkan.</string>
+    <string name="state_running">Status: BERJALAN — runtime native aktif.</string>
+    <string name="state_start_failed">Status: GAGAL — runtime mengembalikan error.</string>
+    <string name="state_braid_selected">Status: TARGET — Braid (Xbox 360 / XBLA).</string>
 
-    <!-- State -->
-    <string name="state_not_ready">Status: BELUM SIAP — tambahkan libbraid.so.</string>
-    <string name="state_library_only">Status: LIBRARY SIAP — gamepad belum terhubung.</string>
-    <string name="state_import">Status: IMPORT — pilih file game.</string>
-    <string name="state_ready">Status: SIAP — gamepad dan library tersedia.</string>
-
-    <!-- Buttons -->
+    <!-- Tombol -->
     <string name="btn_play">▶ Play</string>
     <string name="btn_import">📥 Import Game</string>
-    <string name="btn_controls">🎮 On-screen controls</string>
-    <string name="btn_support">❤ Support the project</string>
+    <string name="btn_info_desc">Info aplikasi</string>
+    <string name="btn_settings_desc">Diagnostik</string>
+    <string name="btn_refresh_desc">Perbarui status</string>
 
-    <!-- Controller hints -->
-    <string name="hint_play">X Play</string>
-    <string name="hint_back">O Back</string>
+    <!-- Petunjuk gamepad -->
+    <string name="hint_play">Play</string>
+    <string name="hint_back">Keluar</string>
+    <string name="hint_play_desc">Tombol A: Play</string>
+    <string name="hint_back_desc">Tombol B: Keluar</string>
 
     <!-- Import -->
     <string name="import_pending">Membaca file…</string>
     <string name="import_error">Gagal membaca file.</string>
+    <string name="import_no_picker">Tidak ada aplikasi file picker di perangkat ini.</string>
+    <string name="import_denied">Izin baca ditolak. Pilih file lewat aplikasi Files/DocumentsUI.</string>
     <string name="import_legal">Gunakan hanya salinan game yang sah. File tidak disimpan/diupload.</string>
+
+    <!-- Toast -->
+    <string name="toast_refreshed">Status diperbarui.</string>
+    <string name="toast_no_library">libbraid.so tidak termuat.</string>
+    <string name="toast_stub">Runtime game masih stub — lihat docs/BRAID-REQUIREMENTS.md.</string>
+    <string name="toast_started">Runtime native dimulai.</string>
+    <string name="toast_braid_selected">Target: Braid (XBLA).</string>
+
+    <!-- Dialog -->
+    <string name="dialog_no_library_title">Native library belum ada</string>
+    <string name="dialog_no_library_body">libbraid.so tidak ditemukan atau gagal dimuat.\n\nBuild hasil recompile Anda, lalu taruh di:\nlauncher/app/src/main/jniLibs/arm64-v8a/libbraid.so\n\nFolder tersebut di-ignore git. Lihat docs/INTEGRATION.md.</string>
+    <string name="dialog_stub_title">Runtime masih stub</string>
+    <string name="dialog_stub_body">Launcher sudah berjalan dan libbraid_stub.so termuat, tetapi belum ada kode game hasil recompile.\n\nYang masih dibutuhkan: recompiler PowerPC → C++, HLE XDK, renderer, audio, dan input. Ringkasan lengkap ada di docs/BRAID-REQUIREMENTS.md.</string>
+    <string name="dialog_start_failed_title">Runtime gagal start</string>
+    <string name="dialog_collection_title">Koleksi</string>
+    <string name="dialog_collection_body">Target aktif: Braid (Xbox 360 / XBLA).\n\nRepo ini khusus Braid Android. Tidak ada judul lain dan tidak ada data game di dalam repo.</string>
+    <string name="dialog_about_title">Tentang Braid Android</string>
+    <string name="dialog_about_body">Launcher Android khusus target Braid (Xbox 360 / XBLA).\n\nRepo ini hanya berisi launcher, skrip build, dan dokumentasi — tanpa data game. Gunakan hanya salinan Braid yang sah Anda miliki, untuk pemakaian sendiri.</string>
+    <string name="dialog_diagnostics_title">Diagnostik</string>
 </resources>

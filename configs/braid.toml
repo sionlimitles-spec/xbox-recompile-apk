@@ -13,4 +13,7 @@ min_sdk = 21
 
 [output]
 include_game_data = false
-apk_name = "braid-recompile-stub"
+apk_name = "braid-android-debug"
+application_id = "com.braid.android"
+native_library = "libbraid.so"
+bundled_stub = "libbraid_stub.so"

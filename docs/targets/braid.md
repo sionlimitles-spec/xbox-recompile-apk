@@ -74,10 +74,12 @@ Lihat [LEGAL.md](../LEGAL.md). Kalau Anda tidak memiliki salinan sah, repo ini t
 
 ## Status di repo ini
 
-- Target **direncanakan**, bukan sudah didukung.
+- Target **direncanakan**, belum bisa dimainkan.
 - `configs/braid.toml` hanya berisi placeholder.
 - Tidak ada XEX/XBE/ISO, asset, atau APK game di sini.
-- Stub launcher di `launcher/` baru sebatas deteksi gamepad.
+- Launcher **Braid Android** sudah punya UI interaktif, import metadata lokal, deteksi gamepad, dan JNI stub (`libbraid_stub.so`).
+- Analisa komponen yang masih dibutuhkan: [BRAID-REQUIREMENTS.md](../BRAID-REQUIREMENTS.md).
+- Kontrak library: [INTEGRATION.md](../INTEGRATION.md).
 
 ## Alternatif yang lebih bersih secara hukum
 

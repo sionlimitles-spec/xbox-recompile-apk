@@ -19,4 +19,10 @@ else
   echo "Peringatan: gradle belum ada di PATH" >&2
 fi
 
-echo "Environment OK (Stub launcher saja; belum ada data game)."
+if [[ -d "$ANDROID_HOME/ndk/27.0.12077973" ]]; then
+  echo "ndk: 27.0.12077973"
+else
+  echo "Peringatan: NDK 27.0.12077973 belum terpasang." >&2
+fi
+
+echo "Environment OK (launcher Braid Android + stub native)."

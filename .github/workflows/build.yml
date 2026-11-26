@@ -1,4 +1,4 @@
-name: build-stub-launcher
+name: build-braid-android
 
 on:
   push:
@@ -25,7 +25,8 @@ jobs:
           SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -path '*/bin/sdkmanager' -print -quit)"
           [[ -n "$SDKMANAGER" ]] || { echo "sdkmanager tidak ditemukan" >&2; exit 1; }
           yes | "$SDKMANAGER" --licenses > /dev/null || true
-          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0" \
+            "ndk;27.0.12077973" "cmake;3.22.1"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -33,13 +34,16 @@ jobs:
       - name: Make scripts executable
         run: chmod +x scripts/*.sh
 
-      - name: Build stub launcher
+      - name: Pastikan repo bebas data game
+        run: ./scripts/check_repo_clean.sh
+
+      - name: Build launcher Braid Android
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
         run: ./scripts/build_launcher.sh
 
-      - name: Upload stub APK
+      - name: Upload APK stub
         uses: actions/upload-artifact@v4
         with:
-          name: xbox-recompile-launcher-stub
+          name: braid-android-debug
           path: launcher/app/build/outputs/apk/debug/app-debug.apk

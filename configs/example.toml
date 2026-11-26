@@ -1,4 +1,5 @@
-# Contoh konfigurasi. Jangan isi dengan path game sungguhan di repo.
+# Contoh konfigurasi generik. Untuk target utama repo ini lihat configs/braid.toml.
+# Jangan isi dengan path game sungguhan di repo.
 [game]
 id = "example-title"
 title = "Contoh Judul (placeholder)"
@@ -13,4 +14,4 @@ min_sdk = 21
 
 [output]
 include_game_data = false
-apk_name = "xbox-recompile-launcher"
+apk_name = "example-android-debug"
