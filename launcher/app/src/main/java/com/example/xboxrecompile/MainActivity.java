@@ -81,12 +81,19 @@ public class MainActivity extends Activity {
         text.append("Gamepad terdeteksi:\n");
 
         boolean found = false;
-        for (InputDevice device : InputDevice.getDevices()) {
-            if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD) {
-                found = true;
-                text.append(String.format(Locale.getDefault(),
-                        "- %s (vendor 0x%04X, product 0x%04X)\n",
-                        device.getName(), device.getVendorId(), device.getProductId()));
+        InputManager im = (InputManager) getSystemService(Context.INPUT_SERVICE);
+        if (im != null) {
+            for (int deviceId : im.getInputDeviceIds()) {
+                InputDevice device = im.getInputDevice(deviceId);
+                if (device == null) {
+                    continue;
+                }
+                if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD) {
+                    found = true;
+                    text.append(String.format(Locale.getDefault(),
+                            "- %s (vendor 0x%04X, product 0x%04X)\n",
+                            device.getName(), device.getVendorId(), device.getProductId()));
+                }
             }
         }
 
