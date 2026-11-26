@@ -14,10 +14,6 @@ import java.util.Locale;
 
 public class MainActivity extends Activity {
 
-    private TextView gamepadStatusView;
-    private TextView libraryStatusView;
-    private TextView targetStatusView;
-    private TextView hintView;
     private TextView statusBar;
     private Button btnPlay;
     private Button btnImport;
@@ -50,7 +46,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Immersive mode: full-screen tanpa status bar
+        // Immersive mode: full-screen tanpa status bar Android
         getWindow().getDecorView().setSystemUiVisibility(
                 android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -59,10 +55,6 @@ public class MainActivity extends Activity {
                         | android.view.View.SYSTEM_UI_FLAG_FULLSCREEN
                         | android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
-        gamepadStatusView = findViewById(R.id.gamepad_status);
-        libraryStatusView = findViewById(R.id.library_status);
-        targetStatusView = findViewById(R.id.target_status);
-        hintView = findViewById(R.id.hint);
         statusBar = findViewById(R.id.status_bar);
         btnPlay = findViewById(R.id.btn_play);
         btnImport = findViewById(R.id.btn_import);
@@ -101,12 +93,11 @@ public class MainActivity extends Activity {
     }
 
     private void refresh() {
-        if (gamepadStatusView == null) {
+        if (statusBar == null) {
             return;
         }
 
         boolean gamepadFound = false;
-        StringBuilder devices = new StringBuilder();
         InputManager im = (InputManager) getSystemService(Context.INPUT_SERVICE);
         if (im != null) {
             for (int deviceId : im.getInputDeviceIds()) {
@@ -116,23 +107,12 @@ public class MainActivity extends Activity {
                 }
                 if ((device.getSources() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD) {
                     gamepadFound = true;
-                    devices.append(String.format(Locale.getDefault(),
-                            "- %s (vendor 0x%04X, product 0x%04X)\n",
-                            device.getName(), device.getVendorId(), device.getProductId()));
                 }
             }
         }
 
-        gamepadStatusView.setText(
-                gamepadFound ? devices.toString() : getString(R.string.gamepad_empty));
-        libraryStatusView.setText(getString(nativeLibraryLoaded
-                ? R.string.library_ready
-                : R.string.library_missing));
-        targetStatusView.setText(getString(R.string.target_value));
-        hintView.setText(buildStateHint(gamepadFound));
-
-        // Animate status bar
-        statusBar.setText(buildStateHint(gamepadFound));
+        String state = buildStateHint(gamepadFound);
+        statusBar.setText(state);
         statusBar.startAnimation(AnimationUtils.loadAnimation(this, R.animator.fade_in));
     }
 
@@ -149,14 +129,12 @@ public class MainActivity extends Activity {
     // ===== Click handlers untuk tombol pill =====
 
     public void onPlayClick(android.view.View view) {
-        // TODO: Trigger nativeStart() setelah libbraid.so siap
-        // Untuk sekarang, hanya tampilkan status
         statusBar.setText(getString(R.string.state_import));
+        statusBar.startAnimation(AnimationUtils.loadAnimation(this, R.animator.fade_in));
     }
 
     public void onImportClick(android.view.View view) {
-        // TODO: Buka file dialog → panggil analyze_local.py → update UI
-        // Untuk sekarang, hanya tampilkan status import
         statusBar.setText(getString(R.string.state_import));
+        statusBar.startAnimation(AnimationUtils.loadAnimation(this, R.animator.fade_in));
     }
 }
